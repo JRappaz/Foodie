@@ -1,0 +1,4 @@
+data/*
+indexes/*
+.ipynb*
+__pycache__/
