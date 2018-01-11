@@ -89,7 +89,7 @@ Figure 5 highlights the health score distribution difference between popular rec
     <p align="center">Figure 5: Distribution of recipes health scores comparison for high popularity</p>
 </div>
 
-This shows that popular recipes tends to be less healthy. 
+This shows, as stated by previous studies about AllRecipes, that **popular recipes tends to be less healthy**. 
 
 ## Recommender System
 
@@ -100,6 +100,13 @@ In order to build a recipe recommender system for the users based on their impli
 BPR is the optimal model to use for user-personalized items ranking based on implicit feedback, which is exactly what we want to achive in our case.
 
 BPR proceeds by successively selecting positive interactions between a user and a recipe (the user made the recipe) and negative interactions (user didn't make the recipe), and learns with SGD according to wheter or not it ranks the positive and negative interaction properly. The performance of the model is then assessed by computing the AUC score over a test set of the interactions, which represents the expectation that a random positive interaction is ranked before a random negative interaction.
+
+
+*Note:* The data used to build the recommender models takes only into account users and recipes with more than 10 interactions. It also discards outliers users with more than 200 interactions. This represents around:
+
+* **80k** users
+* **18k** recipes
+* **2M** interactions ("made-it")
 
 ### Popularity Ranker
 
@@ -113,13 +120,56 @@ The simple BPR model is applied on top of a Matrix Factorization with low-rank m
 
 With cross-validation of the learning rate alpha, the regularizer lambda and the number of latent factors K we obtain an AUC score of **84.55%**.
 
+Figure 6 shows the simple BPR AUC score convergence.
+
+<div align="center">
+    <img src="img/aucs.png"  />
+    <p align="center">Figure 6: Simple BPR - convergence of AUC score</p>
+</div>
+
+
 ### BPR with Bias
 
 It appears that the users interactions with recipes is highly biased by the recipes popularity. Biases are added to the BPR model in order to take this into account.
 
 The model converges faster and we now obtain an AUC score of **84.22%**.
 
-### BPR with non-uniform sampling
+Figure 7 shows the BPR with bias AUC score convergence.
+
+<div align="center">
+    <img src="img/aucs_bias.png"  />
+    <p align="center">Figure 7: BPR with bias - convergence of AUC score</p>
+</div>
+
+
+
+### BPR with oversampling
+
+Given the facts that a few popular recipes represents the majority of the interactions, during the learning phase of BPR, those recipes are more likely to be selected as positive interactions.
+
+This means that the model is trained a lot more on popular recipes than on unpopular ones. In order to reduces the impact of such biased data, an oversampling of the less popular recipes is performed in order to favorize the learning on less popular recipes.
+
+The interactions are then duplicated according to the inverse popularity of their recipe with a specified power. Interactions with the most popular recipes will remains present only once in the set, while others will be duplicated. 
+
+Two models are built, one with power 7/8 and one with factor 3/4 (power 1 means no oversampling, power 0 means oversampling until all recipes have same number of interactions). Figure 8 shows the effect of oversampling on the dataset with power 1 (no oversampling), power 7/8 and 3/4.
+
+<div align="center">
+    <img src="img/oversample.png" />
+    <p align="center">Figure 8: Number of interactions by recipes in dataset after oversampling</p>
+</div>
+
+The two models, 7/8 and 3/4, achieved an AUC score of 83.89% and 83.33% respectively.
+
+These models are less performant than the previous models but if we analyze the recipes they fail to rank properly we note that they offer some advantages compared to previous models. Figure 9 compares the failure rates of all models according to the popularity of the positive interaction's recipe .
+
+<div align="center">
+    <img src="img/comparison.png" />
+    <p align="center">Figure 9: Failure rate comparison of models for different categories of popularity</p>
+</div>
+
+We observe that even though oversampled models peforms bad overall, they tends to rank unpopular recipes better than simple popularity ranker models.
+
+This graph highlights the bad performance of all BPR models in ranking recipe with low popularity, an shows users interaction is highly biased by the popularity of the recipes.
 
 ### Conclusion on Recommender Systems
 
@@ -130,8 +180,8 @@ The table 1 summarize the performance of the various recommender systems models 
 | Popularity Ranker | 83.89% 	   |	 										     |
 | Simple BPR        | 84.55%        |	  							    			 |
 | BPR with bias     | 84.22%        |										         |
-| oversampled BPR (0.75)| 84.22%    |	Performs better on less popularity recipes   |
-| oversampled BPR (0.875)| 84.22%   |	Performs better on less popularity recipes   |
+| oversampled BPR (0.75)| 83.33%    |	Performs better on less popularity recipes   |
+| oversampled BPR (0.875)| 83.89%   |	Performs better on less popularity recipes   |
 
 None of the developed model outperforms significantly the basic popularity-based ranker. **This indicates that the users interactions are highly biased by the popularity of the recipes**. 
 
@@ -151,11 +201,11 @@ Users are linked to the recipes they made, then with all ingredients found in th
 
 Users are projected in a 2D space using a Non-Negative Matrix Factorization followed by a t-SNE. 
 
-They are then clusterized using a DBSCAN. The figure ?? shows the users 2D projection and clustering.
+They are then clusterized using a DBSCAN. The figure 10 shows the users 2D projection and clustering.
 
 <div align="center">
     <img src="img/proj.png"  />
-    <p align="center">Figure 7: User projection and clustering</p>
+    <p align="center">Figure 10: User projection and clustering</p>
 </div>
 
 ### Computing Clusters Ingredients Specificity
@@ -189,6 +239,25 @@ The table 2 shows the list of 10 most similar recipes for the 10 main clusters o
 
 For most clusters it is possible to intuitively identify what it represents with the list of most similar recipes.
 
-For example **cluster 0** is mainly associated to Mexican recipes. **cluster 6** corresponds to bread and salty pastries, **cluster 2** is associated with fruit related recipes.
+For example **cluster 0** is mainly associated to Mexican recipes. **cluster 6** corresponds to bread and salty pastries, **cluster 2** is associated with fruit related recipes, **cluster 132** contians mainly recipes with sauce and **cluster 26** has mostly recipes of asian inspiration.
 
+### Clusters Recipes Healthiness
 
+Clusters can now be evaluated in term of recipes healthiness using the health scores of the most similar recipes
+
+<div align="center">
+    <img src="img/mexican.png" width="360" />
+    <img src="img/asian.png" width="360" />
+    <img src="img/sauce.png" width="360" />
+    <p align="center">Figure 11: Recipes healthiness distribution in "Mexican Food", "Asian Food" and "Food with sauces" clusters</p>
+</div>
+
+## Conclusion
+
+The various models to recommend recipes to user demonstrate that the users interaction on allrecipes is highly biased by the recipes popularity. 
+
+Considering that on average popular recipes are less healthy, this means that a recommender system model based only on user interactions would tend to recommend unhealthy recipes, which is a problem.
+
+Using the ingredients of the recipes as features, intuitively relevant cluster of users have been created, showing preferences for different kinds of ingredients/recipes.
+
+Using this preferences, we have been abled to rank the recipes relevance for every clusters. It therefore offers the possibility of recommending recipes that are relevant for users and constrain the recommender to propose heathier recipes.
