@@ -30,7 +30,7 @@ The data analysis aims at providing insight about users behaviour in the social 
 Figure 1 shows the distribution of interactions amongst users. As expected the distribution follows a power-law. 
 
 <div align="center">
-    <img src="img/distribution-user.png" width="800" />
+    <img src="img/distribution-user.png" width="600" />
     <p align="center">Figure 1: Users interactions distribution</p>
 </div>
 
@@ -46,9 +46,17 @@ We observe that the distribution follows a power-law for the recipes with more t
 This intuition is confirmed by the fact that more 30k recipes are present in the users "made-it" but are yet unavailable on the website.
 
 <div align="center">
-    <img src="img/distribution-recipe.png" width="800"/>
+    <img src="img/distribution-recipe.png" width="600"/>
     <p align="center">Figure 2: Recipe interactions distribution</p>
 </div>
+
+### Cleaned datasets
+
+After analyizing the dataset and clean the recipes without interactions, it remains in our interacitons dataset around:
+
+* **1M** Users
+* **38k** Recipes
+* **4.5M** Made-it interactions
 
 ## Investigating Recipes Healthiness
 
@@ -71,14 +79,6 @@ It provides a score between 1 (healthy) and 3 (unhealthy) for each 4 facts. The 
 </div>
 
 As expected from the previous study on the AllRecipes health score, relatively few recipes are considered healthy according to the standards.
-
-### Cleaned datasets
-
-After analyizing the dataset and clean the recipes without interactions, it remains in our interacitons dataset around:
-
-* **1M** Users
-* **38k** Recipes
-* **4.5M** Made-it interactions
 
 ### Healthiness by popularity
 
@@ -127,20 +127,68 @@ The table 1 summarize the performance of the various recommender systems models 
 
 | Model             | AUC scores    | Note    										 |
 | ------------------|:-------------:|:----------------------------------------------:|
-| Popularity Ranker | 83.89% 	    |	 										     |
+| Popularity Ranker | 83.89% 	   |	 										     |
 | Simple BPR        | 84.55%        |	  							    			 |
 | BPR with bias     | 84.22%        |										         |
 | oversampled BPR (0.75)| 84.22%    |	Performs better on less popularity recipes   |
 | oversampled BPR (0.875)| 84.22%   |	Performs better on less popularity recipes   |
 
+None of the developed model outperforms significantly the basic popularity-based ranker. **This indicates that the users interactions are highly biased by the popularity of the recipes**. 
 
-## Users Clustering
+This is a potential problem since popular recipes tends to be less healthier than others. 
 
-The table 2 shows the list of 10 most similar recipes for the 10 main clusters of users.
+## Ingredient-based Users Clustering
+
+Since no significant information can be obtain only from the interactions of users with recipes, we now try to clusterize the users according to other features of the recipes. The features we use are the ingredients of the recipes.
+
+*The ingredient-base users clustering process can be found in this [Ingredients Model Notebook](python/IngredientsModel.ipynb)*
+
+### TF-IDF approach
+
+Users are linked to the recipes they made, then with all ingredients found in those recipes. A TF-IDF approach is used to create a User/Ingredients matrix representing how relevant an ingredient is for a user.
+
+### User projection and Clustering
+
+Users are projected in a 2D space using a Non-Negative Matrix Factorization followed by a t-SNE. 
+
+They are then clusterized using a DBSCAN. The figure ?? shows the users 2D projection and clustering.
+
+<div align="center">
+    <img src="img/proj.png"  />
+    <p align="center">Figure 7: User projection and clustering</p>
+</div>
+
+### Computing Clusters Ingredients Specificity
+
+the specificity score of the ingredient for cluster are computed by comparing the average User/Ingredient relevance of the ingredients in a cluster compared as in the other clusters.
+
+<div align="center">
+    <img src="img/specificity.png"  width="680"/>
+</div>
+
+This gives a matrix representing how relevant/specific ingredients are for each cluster.
+
+### Computing Recipes Similarity with Clusters
+
+Using the ingredients/clusters specificity matrix, clusters and recipes similarity is computed by computing the average specificity of the ingredients in a recipe for a given cluster.
+
+<div align="center">
+    <img src="img/similarity.png"  width="180"/>
+</div>
+
+This gives a matrix representing how relevant/similar recipes are for each cluster, and allow to rank the recipes by relevance/similarity in each clusters.
+
+### Associating Recipes to Clusters
+
+The table 2 shows the list of 10 most similar recipes for the 10 main clusters of users. 
 
 <div align="center">
     <img src="img/clusters_table.png"  />
     <p align="center">Table 2: Most similar recipes for clusters</p>
 </div>
+
+For most clusters it is possible to intuitively identify what it represents with the list of most similar recipes.
+
+For example **cluster 0** is mainly associated to Mexican recipes. **cluster 6** corresponds to bread and salty pastries, **cluster 2** is associated with fruit related recipes.
 
 
