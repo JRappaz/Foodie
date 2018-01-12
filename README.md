@@ -259,10 +259,8 @@ Clusters can now be evaluated in term of recipes healthiness using the health sc
 
 ## Conclusion
 
-The various models to recommend recipes to user demonstrate that the users interaction on allrecipes is highly biased by the recipes popularity. 
+The results obtained from the considered recipe recommendation models suggest that users interactions on allrecipes are highly influenced by recipes popularity. This observation could raise concerns, considering that, on average, popular recipes are less healthy.
 
-Considering that on average popular recipes are less healthy, this means that a recommender system model based only on user interactions would tend to recommend unhealthy recipes, which is a problem.
+We propose to circumpvent popularity bias by using ingredients as a proxy for recipe recommendations: ingredients can alleviate the popularity bias as the ingredients are shared across different recipes with different levels of popularity. Using ingredients as features, relevant cluster of users have naturally emerged, exhibiting various groups of users with clearly identifiable preferences for different kinds of ingredients/recipes.
 
-Using the ingredients of the recipes as features, intuitively relevant cluster of users have been created, showing preferences for different kinds of ingredients/recipes.
-
-Using this preferences, we have been abled to rank the recipes relevance for every clusters. It therefore offers the possibility of recommending recipes that are relevant for users and constrain the recommender to propose heathier recipes.
+Using this preferences, we have been abled to rank the recipes relevance for every clusters. It therefore offers the possibility of recommending recipes that are relevant for users and constrain the recommender to propose healthier recipes.
