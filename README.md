@@ -185,8 +185,8 @@ The table 1 summarize the performance of the various recommender systems models 
 | Popularity Ranker | 83.89% 	   |	 										     |
 | Simple BPR        | 84.55%        |	  							    			 |
 | BPR with bias     | 84.22%        |										         |
-| oversampled BPR (0.75)| 83.33%    |	Performs better on less popularity recipes   |
-| oversampled BPR (0.875)| 83.89%   |	Performs better on less popularity recipes   |
+| oversampled BPR (0.75)| 83.33%    |	Performs relatively well on less popular recipes   |
+| oversampled BPR (0.875)| 83.89%   |	Performs relatively well on less popular recipes   |
 
 None of the developed model outperforms significantly the basic popularity-based ranker. **This indicates that the users interactions are highly biased by the popularity of the recipes**. 
 
@@ -261,6 +261,6 @@ Clusters can now be evaluated in term of recipes healthiness using the health sc
 
 The results obtained from the considered recipe recommendation models suggest that users interactions on allrecipes are highly influenced by recipes popularity. This observation could raise concerns, considering that, on average, popular recipes are less healthy.
 
-We propose to circumpvent popularity bias by using ingredients as a proxy for recipe recommendations: ingredients can alleviate the popularity bias as the ingredients are shared across different recipes with different levels of popularity. Using ingredients as features, relevant cluster of users have naturally emerged, exhibiting various groups of users with clearly identifiable preferences for different kinds of ingredients/recipes.
+We propose to circumvent popularity bias by using ingredients as a proxy for recipe recommendations: ingredients can alleviate the popularity bias as the ingredients are shared across different recipes with different levels of popularity. Using ingredients as features, relevant cluster of users have naturally emerged, exhibiting various groups of users with clearly identifiable preferences for different kinds of ingredients/recipes.
 
 Using this preferences, we have been abled to rank the recipes relevance for every clusters. It therefore offers the possibility of recommending recipes that are relevant for users and constrain the recommender to propose healthier recipes.
