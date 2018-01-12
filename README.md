@@ -11,6 +11,11 @@ The data used for this project is from [AllRecipes.com](http://allrecipes.com/),
 AllRecipes being very protective of their data, no dataset is provided, hence all data required for the project has been scraped automatically from the website, using python scripts. The whole scraping process can be found in this [Scraper Notebook](python/Scraper.ipynb). The scraping is done in three steps: 
 
 * First by emulating a user browsing the website page by page (20 recipes by pages), until the end, keeping tracks of the recipes links.
+
+<div align="center">
+    <img src="img/browse.gif" />
+</div>
+
 * Each recipes link is then explored and all relevant informations about them is stored (Description, ingredients, cooking steps, popularity, etc..). Plus, for each recipes the entire set of reviews with user, rating and comment is downloaded.
 * Once all recipes and reviews are downloaded, we create a list of all users that have made at least one comment and we explore all users profiles and download for each of them the list of recipes they have made ("made-it" mention).
 
