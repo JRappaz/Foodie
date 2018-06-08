@@ -1,0 +1,7 @@
+data/*
+indexes/*
+.ipynb*
+__pycache__/
+*.zip
+user_data/
+recipe_data/
